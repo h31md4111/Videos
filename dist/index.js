@@ -162,6 +162,12 @@ app.put('/videos/:id', (req, res) => {
             message: 'Author name is too long'
         });
     }
+    if (req.body.canBeDownloaded !== undefined && typeof req.body.canBeDownloaded !== "boolean") {
+        errors.push({
+            field: 'canBeDownloaded',
+            message: 'canBeDownloaded must be a boolean'
+        });
+    }
     const availableResolutions = req.body.availableResolutions;
     if (availableResolutions !== undefined && (!Array.isArray(availableResolutions) || availableResolutions.length === 0)) {
         errors.push({
@@ -196,10 +202,7 @@ app.put('/videos/:id', (req, res) => {
     if (req.body.availableResolutions !== undefined) {
         putVideo.availableResolutions = req.body.availableResolutions;
     }
-    if (req.body.canBeDownloaded !== undefined && typeof req.body.canBeDownloaded !== "boolean") {
-        return res.status(400).send({ error: "canBeDownloaded must be a boolean" });
-    }
-    else {
+    if (req.body.canBeDownloaded !== undefined) {
         putVideo.canBeDownloaded = req.body.canBeDownloaded;
     }
     if (req.body.minAgeRestriction !== undefined) {
@@ -208,7 +211,14 @@ app.put('/videos/:id', (req, res) => {
     if (req.body.publicationDate !== undefined) {
         putVideo.publicationDate = req.body.publicationDate;
     }
-    return res.status(204).send(putVideo);
+    if (errors.length > 0) {
+        return res.status(400).json({
+            errorsMessages: errors
+        });
+    }
+    else {
+        return res.status(204).send(putVideo);
+    }
 });
 app.delete('/videos/:id', (req, res) => {
     let foundVideo = false;

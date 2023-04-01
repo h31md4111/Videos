@@ -1,6 +1,5 @@
 import express, {Request, Response} from "express";
 import bodyParser from "body-parser";
-import {isBoolean} from "util";
 
 const app = express()
 const port = process.env.PORT || 5000
@@ -176,6 +175,13 @@ app.put('/videos/:id', (req: Request, res: Response) => {
         });
     }
 
+    if (req.body.canBeDownloaded !== undefined && typeof req.body.canBeDownloaded !== "boolean") {
+        errors.push({
+            field: 'canBeDownloaded',
+            message: 'canBeDownloaded must be a boolean'
+        });
+    }
+
     const availableResolutions = req.body.availableResolutions;
     if (availableResolutions !== undefined && (!Array.isArray(availableResolutions) || availableResolutions.length === 0)) {
         errors.push({
@@ -215,14 +221,10 @@ app.put('/videos/:id', (req: Request, res: Response) => {
         putVideo.availableResolutions = req.body.availableResolutions;
     }
 
-    if (req.body.canBeDownloaded !== undefined && typeof req.body.canBeDownloaded !== "boolean") {
-        errors.push({
-            field: 'canBeDownloaded',
-            message: 'canBeDownloaded must be a boolean'
-        });
-    } else {
+    if (req.body.canBeDownloaded !== undefined) {
         putVideo.canBeDownloaded = req.body.canBeDownloaded;
     }
+
 
     if (req.body.minAgeRestriction !== undefined) {
         putVideo.minAgeRestriction = req.body.minAgeRestriction;
@@ -232,7 +234,13 @@ app.put('/videos/:id', (req: Request, res: Response) => {
         putVideo.publicationDate = req.body.publicationDate;
     }
 
-    return res.status(204).send(putVideo)
+    if (errors.length > 0) {
+        return res.status(400).json({
+            errorsMessages: errors
+        });
+    } else {
+        return res.status(204).send(putVideo);
+    }
 })
 app.delete('/videos/:id', (req: Request, res: Response) => {
 
