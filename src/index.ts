@@ -1,5 +1,6 @@
 import express, {Request, Response} from "express";
 import bodyParser from "body-parser";
+import {isBoolean} from "util";
 
 const app = express()
 const port = process.env.PORT || 5000
@@ -52,16 +53,26 @@ app.post('/videos', (req: Request, res: Response) => {
     //required fields validation
     if (!req.body.title) {
         errors.push({
-            field: "title",
-            message: "Title is required field"
-        })
+            field: 'title',
+            message: 'Title is required field'
+        });
+    } else if (req.body.title.length > 40) {
+        errors.push({
+            field: 'title',
+            message: 'Title is too long'
+        });
     }
 
     if (!req.body.author) {
         errors.push({
-            field: "author",
-            message: "Author is required field"
-        })
+            field: 'author',
+            message: 'Author is required field'
+        });
+    } else if (req.body.author.length > 20) {
+        errors.push({
+            field: 'author',
+            message: 'Author name is too long'
+        });
     }
 
     // validation canBeDownloaded field
@@ -184,6 +195,7 @@ app.put('/videos/:id', (req: Request, res: Response) => {
         }
     }
 
+
     if (errors.length > 0) {
         return res.status(400).json({
             errorsMessages: errors
@@ -203,7 +215,9 @@ app.put('/videos/:id', (req: Request, res: Response) => {
         putVideo.availableResolutions = req.body.availableResolutions;
     }
 
-    if (req.body.canBeDownloaded !== undefined) {
+    if (req.body.canBeDownloaded !== undefined && typeof req.body.canBeDownloaded !== "boolean") {
+        return res.status(400).send({ error: "canBeDownloaded must be a boolean" });
+    } else {
         putVideo.canBeDownloaded = req.body.canBeDownloaded;
     }
 
@@ -236,7 +250,7 @@ app.delete('/videos/:id', (req: Request, res: Response) => {
 
     else return res.sendStatus(204);
 })
-app.delete('/videos', (req: Request, res: Response) => {
+app.delete('/testing/all-data', (req: Request, res: Response) => {
     videos.splice(0, videos.length);
     res.sendStatus(204).send('All data is deleted');
 });

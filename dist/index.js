@@ -35,12 +35,6 @@ app.use(parserMiddleware);
 app.get('/videos', (req, res) => {
     res.send(videos);
 });
-// if (req.query.title) {
-//     let searchString = req.query.title.toString()
-//     res.send(videos.filter(p => p.title.indexOf(searchString) > -1))
-// } else {
-//     res.send(videos)
-// }
 app.get('/videos/:id', (req, res) => {
     const video = videos.find(v => v.id === +req.params.id);
     if (video) {
@@ -55,14 +49,26 @@ app.post('/videos', (req, res) => {
     //required fields validation
     if (!req.body.title) {
         errors.push({
-            field: "title",
-            message: "Title is required field"
+            field: 'title',
+            message: 'Title is required field'
+        });
+    }
+    else if (req.body.title.length > 40) {
+        errors.push({
+            field: 'title',
+            message: 'Title is too long'
         });
     }
     if (!req.body.author) {
         errors.push({
-            field: "author",
-            message: "Author is required field"
+            field: 'author',
+            message: 'Author is required field'
+        });
+    }
+    else if (req.body.author.length > 20) {
+        errors.push({
+            field: 'author',
+            message: 'Author name is too long'
         });
     }
     // validation canBeDownloaded field
@@ -190,7 +196,10 @@ app.put('/videos/:id', (req, res) => {
     if (req.body.availableResolutions !== undefined) {
         putVideo.availableResolutions = req.body.availableResolutions;
     }
-    if (req.body.canBeDownloaded !== undefined) {
+    if (req.body.canBeDownloaded !== undefined && typeof req.body.canBeDownloaded !== "boolean") {
+        return res.status(400).send({ error: "canBeDownloaded must be a boolean" });
+    }
+    else {
         putVideo.canBeDownloaded = req.body.canBeDownloaded;
     }
     if (req.body.minAgeRestriction !== undefined) {
@@ -216,36 +225,10 @@ app.delete('/videos/:id', (req, res) => {
     else
         return res.sendStatus(204);
 });
-app.delete('/videos', (req, res) => {
+app.delete('/testing/all-data', (req, res) => {
     videos.splice(0, videos.length);
     res.sendStatus(204).send('All data is deleted');
 });
-// // app.get('/products/:productTitle', (req: Request, res: Response) => {
-// //
-// //     let product = products.find(p => p.title === req.params.productTitle)
-// //
-// //     if (product) {
-// //         res.send(product)
-// //     } else {
-// //         res.send(404)
-// //     }
-// //
-// // })
-//
-// app.get('/addresses', (req: Request, res: Response) => {
-//     res.send(addresses)
-// })
-// app.get('/addresses/:id', (req: Request, res: Response) => {
-//
-//     let address = addresses.find(p => p.id === +req.params.id)
-//
-//     if (address) {
-//         res.send(address)
-//     } else {
-//         res.send(404)
-//     }
-//
-// })
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);
 });
