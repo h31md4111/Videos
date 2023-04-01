@@ -201,6 +201,15 @@ app.put('/videos/:id', (req: Request, res: Response) => {
         }
     }
 
+    // validation minAgeRestriction
+    const minAgeRestriction = req.body.minAgeRestriction !== undefined ? parseInt(req.body.minAgeRestriction) : null;
+    if (minAgeRestriction !== null && (minAgeRestriction < 1 || minAgeRestriction > 18)) {
+        errors.push({
+            field: "minAgeRestriction",
+            message: "Min age restriction must be between 1 and 18"
+        });
+    }
+
 
     if (errors.length > 0) {
         return res.status(400).json({
