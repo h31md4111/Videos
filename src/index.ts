@@ -216,7 +216,10 @@ app.put('/videos/:id', (req: Request, res: Response) => {
     }
 
     if (req.body.canBeDownloaded !== undefined && typeof req.body.canBeDownloaded !== "boolean") {
-        return res.status(400).send({ error: "canBeDownloaded must be a boolean" });
+        errors.push({
+            field: 'canBeDownloaded',
+            message: 'canBeDownloaded must be a boolean'
+        });
     } else {
         putVideo.canBeDownloaded = req.body.canBeDownloaded;
     }
