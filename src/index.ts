@@ -28,6 +28,7 @@ const videos = [
     }
 ];
 
+//middleware
 const parserMiddleware = bodyParser({})
 app.use(parserMiddleware)
 
