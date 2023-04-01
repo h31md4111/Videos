@@ -211,6 +211,25 @@ app.put('/videos/:id', (req: Request, res: Response) => {
         });
     }
 
+    // validation createdAt
+    const createdAt = req.body.createdAt !== undefined ? new Date(req.body.createdAt) : new Date();
+    if (isNaN(createdAt.getTime())) {
+        errors.push({
+            field: "createdAt",
+            message: "Invalid date format for createdAt"
+        });
+    }
+
+    // validation publicationDate
+    const publicationDate = req.body.publicationDate !== undefined ? new Date(req.body.publicationDate) : new Date(createdAt.getTime() + 86400000);
+    // 24 * 60 * 60 * 1000 = 86400000
+    if (isNaN(publicationDate.getTime())) {
+        errors.push({
+            field: "publicationDate",
+            message: "Invalid date format for publicationDate"
+        });
+    }
+
 
     if (errors.length > 0) {
         return res.status(400).json({

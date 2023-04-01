@@ -30,6 +30,7 @@ const videos = [
         availableResolutions: ["P144", "P480", "P720", "P1080"]
     }
 ];
+//middleware
 const parserMiddleware = (0, body_parser_1.default)({});
 app.use(parserMiddleware);
 app.get('/videos', (req, res) => {
@@ -193,6 +194,23 @@ app.put('/videos/:id', (req, res) => {
         errors.push({
             field: "minAgeRestriction",
             message: "Min age restriction must be between 1 and 18"
+        });
+    }
+    // validation createdAt
+    const createdAt = req.body.createdAt !== undefined ? new Date(req.body.createdAt) : new Date();
+    if (isNaN(createdAt.getTime())) {
+        errors.push({
+            field: "createdAt",
+            message: "Invalid date format for createdAt"
+        });
+    }
+    // validation publicationDate
+    const publicationDate = req.body.publicationDate !== undefined ? new Date(req.body.publicationDate) : new Date(createdAt.getTime() + 86400000);
+    // 24 * 60 * 60 * 1000 = 86400000
+    if (isNaN(publicationDate.getTime())) {
+        errors.push({
+            field: "publicationDate",
+            message: "Invalid date format for publicationDate"
         });
     }
     if (errors.length > 0) {
