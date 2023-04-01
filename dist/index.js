@@ -213,6 +213,12 @@ app.put('/videos/:id', (req, res) => {
             message: "Invalid date format for publicationDate"
         });
     }
+    else if (typeof req.body.publicationDate !== "string" || Number.isNaN(Date.parse(req.body.publicationDate))) {
+        errors.push({
+            field: "publicationDate",
+            message: "Invalid date format for publicationDate"
+        });
+    }
     if (errors.length > 0) {
         return res.status(400).json({
             errorsMessages: errors

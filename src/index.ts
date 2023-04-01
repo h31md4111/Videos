@@ -222,13 +222,18 @@ app.put('/videos/:id', (req: Request, res: Response) => {
 
     // validation publicationDate
     const publicationDate = req.body.publicationDate !== undefined ? new Date(req.body.publicationDate) : new Date(createdAt.getTime() + 86400000);
-    // 24 * 60 * 60 * 1000 = 86400000
+// 24 * 60 * 60 * 1000 = 86400000
     if (isNaN(publicationDate.getTime())) {
         errors.push({
             field: "publicationDate",
             message: "Invalid date format for publicationDate"
         });
-    }
+    } else if (typeof req.body.publicationDate !== "string" || Number.isNaN(Date.parse(req.body.publicationDate))) {
+    errors.push({
+        field: "publicationDate",
+        message: "Invalid date format for publicationDate"
+    });
+}
 
 
     if (errors.length > 0) {
