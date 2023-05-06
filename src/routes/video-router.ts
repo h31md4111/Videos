@@ -13,7 +13,7 @@ export const clearDB = (): void => {
 videoRouter.get('/', (req: Request, res: Response) => {
     res.send(videos);
 });
-videoRouter.get('videos/:id', (req: Request, res: Response) => {
+videoRouter.get('/:id', (req: Request, res: Response) => {
 
     const video = videos.find(v => v.id === +req.params.id)
 
