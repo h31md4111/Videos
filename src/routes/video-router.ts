@@ -10,7 +10,7 @@ let videos: Video[] = [];
 export const clearDB = (): void => {
     videos = [];
 }
-videoRouter.get('/videos', (req: Request, res: Response) => {
+videoRouter.get('/', (req: Request, res: Response) => {
     res.send(videos);
 });
 videoRouter.get('videos/:id', (req: Request, res: Response) => {
@@ -24,7 +24,7 @@ videoRouter.get('videos/:id', (req: Request, res: Response) => {
     }
     })
 
-videoRouter.post('videos/', (req: Request, res: Response) => {
+videoRouter.post('/', (req: Request, res: Response) => {
 
     const errors = validateVideoData(req.body);
 
@@ -46,7 +46,7 @@ videoRouter.post('videos/', (req: Request, res: Response) => {
     return res.sendStatus(500);
 })
 
-videoRouter.put('videos/:id', (req: Request, res: Response) => {
+videoRouter.put('/:id', (req: Request, res: Response) => {
 
     const videoIndex = videos.findIndex(video => video.id === +req.params.id);
     const errors = validateVideoData(req.body);
@@ -61,7 +61,7 @@ res.sendStatus(404);
 }
 });
 
-videoRouter.delete('videos/:id', (req: Request, res: Response) => {
+videoRouter.delete('/:id', (req: Request, res: Response) => {
 
     const videoIndex = videos.findIndex(video => video.id === +req.params.id);
     if (videoIndex > -1) {
